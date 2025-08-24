@@ -12,12 +12,12 @@ struct Config
     // ip подключения
     std::string address = "0.0.0.0";
     // максимальное количество подключений
-    size_t maxConnect = 1000;
+    size_t maxConnect   = 1000;
     // максимальный размер очереди на подключение
     int maxQue = SOMAXCONN;
     // максимальные таймауты перед ошибкой
-    int recvTimeoutMs = 5000;
-    int sendTimeoutMs = 5000;
+    int recvTimeoutMs   = 5000;
+    int sendTimeoutMs   = 5000;
 };
 
 class Server
@@ -39,6 +39,10 @@ public:
 
     bool SendData(const int client, const std::span<const uint8_t> data);
     void CloseConnection(const int client);
+
+private:
+    void SetupSocket();
+    void BindAndListen();
 
 private:
     Config config_;
