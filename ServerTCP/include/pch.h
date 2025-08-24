@@ -4,11 +4,13 @@
 #include <iostream>
 #include <system_error>
 #include <cstring>
+#include <string>
 #include <functional>
 #include <unordered_map>
 #include <vector>
 #include <atomic>
 #include <sys/socket.h>
 #include <csignal>
+#include <span>
 
 #endif // __PCH_H__

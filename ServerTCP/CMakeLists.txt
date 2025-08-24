@@ -9,6 +9,7 @@ set(SOURCES
     src/ServerMain.cpp
     src/SignalHandler.cpp
     src/SignalWorker.cpp
+    src/Server.cpp
 )
 
 # Include директории
