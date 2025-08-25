@@ -80,4 +80,76 @@ void Server::BindAndListen()
     }
 }
 
+void Server::Start()
+{
+    if(running_.exchange(true))
+    {
+        throw std::runtime_error("Server already running");
+    }
+
+    try
+    {
+        SetupSocket();
+        BindAndListen();
+
+        std::cout<<"Server is started:\n\t address: "<< config_.address << "\n\t port: " <<config_.port<<"\n";
+    
+        //
+        // TODO
+        // запустить рабочие потоки
+        //
+        // TODO++
+        // положить это на корутины
+        //
+    }
+    catch(const std::exception& e)
+    {
+        running_ = false;
+        throw e.what();
+    }
+    catch(...)
+    {
+        running_ = false;
+        throw;
+    }
+}
+
+void Server::Accept()
+{
+    while(running_)
+    {
+        sockaddr_in clientAddr = {};
+        socklen_t clientLen = sizeof(clientAddr);
+    
+        int client = accept4(server_, 
+                             reinterpret_cast<sockaddr*>(&clientAddr),
+                             &clientLen, 
+                             SOCK_NONBLOCK);
+
+        if(client < 0)
+        {
+            if(EAGAIN == errno || EWOULDBLOCK)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+
+            continue;
+        }
+
+
+        timeval tv = {};
+        // принятие
+        tv.tv_sec  = config_.recvTimeoutMs / 1000;
+        tv.tv_usec = (config_.recvTimeoutMs % 1000) * 1000;
+        setsockopt(client, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+
+        // отправка
+        tv.tv_sec  = config_.sendTimeoutMs / 1000;
+        tv.tv_usec = (config_.sendTimeoutMs % 1000) * 1000;
+        setsockopt(client, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+
+        // TODO запустить обработчик клиента
+    }
+}
+
 } // namespace projects::server::tcp

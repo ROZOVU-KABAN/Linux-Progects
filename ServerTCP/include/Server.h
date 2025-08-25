@@ -43,7 +43,7 @@ public:
 private:
     void SetupSocket();
     void BindAndListen();
-
+    void Accept();
 private:
     Config config_;
     int server_ = -1;
